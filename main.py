@@ -8,11 +8,11 @@ app = Flask(__name__)
 
 # Dictionary of KEY: potential hangman words, VALUE: gameID
 words = {
-    "ALGORITHM": 1,
-    "CODE": 2,
-    "DEBUG": 3,
-    "FUNCTION": 4,
-    "VARIABLE": 5
+    "AAA": 1,
+    "AAB": 2,
+    "AAC": 3,
+    "AAD": 4,
+    "AAE": 5
 }
 
 #initialize gameid for gamepos
@@ -38,6 +38,7 @@ unmaskedword = "string"
 @app.route("/games/", methods=["POST"])
 def games():
     global game_id
+    global game
     game_id = random.randint(1,5)
     for word in words:
         if words[word] == game_id:
@@ -45,7 +46,7 @@ def games():
             unmaskedword = word
     maskedword = "_" * len(unmaskedword)
     game["masked word"] = maskedword
-    return jsonify(game_id), 201
+    return jsonify(game_id, maskedword, unmaskedword), 201
 
 @app.route("/games/<game_id>", methods=["GET"])
 def gamepos(game_id):
@@ -53,10 +54,14 @@ def gamepos(game_id):
 
 @app.route("/games/<game_id>/guesses", methods=["POST"])
 def guesses(game_id):
+    #checks if game is in progress
+    if game["Game status"] != "in progress":
+        return jsonify({"error": "game not in progress"})
+
     global unmaskedword
     data = request.get_json()
     letter = data["letter"]
-    letter.upper()
+    letter = letter.upper()
     if letter in game["Guesses so far"]:
         return jsonify({"error": "letter already guessed"}, game), 409
     else:
@@ -77,7 +82,8 @@ def guesses(game_id):
                 # replacing "_" with letter
                 new_word = game["masked word"]
                 new_word = list(new_word)
-                new_word[i] == letter
+                new_word[j-1] = letter
+                new_word = "".join(map(str,new_word))
                 game["masked word"] = new_word
 
                 # check if word is guessed
@@ -100,8 +106,9 @@ def guesses(game_id):
                     game["Remaining attempts"]-=1
                     game["Game status"] = "lost"
                     return jsonify({"error": "No more attempts left, game over"}, game), 409
+        
+        return jsonify({"welldone":"guess again!"}, game), 201
                 
-            return jsonify(game)
             
             
 
