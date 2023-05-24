@@ -58,7 +58,7 @@ def guesses(game_id):
     letter = data["letter"]
     letter.upper()
     if letter in game["Guesses so far"]:
-        return jsonify({"error": "letter already guessed"}), 409
+        return jsonify({"error": "letter already guessed"}, game), 409
     else:
         # Loops every letter checking for matches. If match = replace "_" with the letter.
         # no match = adjusted score, potential game over. 409
@@ -87,7 +87,7 @@ def guesses(game_id):
                         missing_letter+=1
                 if missing_letter == 0:
                     game["Game status"] = "won"
-                    return jsonify({"message": "Congratulations! You have guessed the word correctly."}), 200
+                    return jsonify({"message": "Congratulations! You have guessed the word correctly."}, game), 200
 
                 correctGuesses.append(letter)
                 correct_counter +=1
@@ -95,11 +95,13 @@ def guesses(game_id):
                 incorrectGuesses.append(letter)
                 if game["Remaining attempts"] > 1:
                     game["Remaining attempts"]-=1
-                    return jsonify({"wrong letter":"try again"}), 201
+                    return jsonify({"wrong letter":"try again"}, game), 201
                 else:
                     game["Remaining attempts"]-=1
                     game["Game status"] = "lost"
-                    return jsonify({"error": "No more attempts left, game over"}), 409
+                    return jsonify({"error": "No more attempts left, game over"}, game), 409
+                
+            return jsonify(game)
             
             
 
