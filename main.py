@@ -4,20 +4,17 @@ import random
 
 app = Flask(__name__)
 
+game_id = 1
+unmaskedword = "string"
 
-
-# Dictionary of KEY: potential hangman words, VALUE: gameID
 words = {
-    "AAA": 1,
-    "AAB": 2,
-    "AAC": 3,
-    "AAD": 4,
-    "AAE": 5
+    "ALGORITHM": 1,
+    "VARIABLE": 2,
+    "FUNCTION": 3,
+    "DEBUGGING": 4,
+    "COMPILER": 5
 }
 
-#initialize gameid for gamepos
-game_id = 1
-# Initialize a dictionary to store game status
 game = {
     "masked word": "null",
     "Remaining attempts": 6,
@@ -25,16 +22,7 @@ game = {
     "Game status": "in progress"
 }
 
-# Initialize an empty list to store incorrect guesses
-incorrectGuesses = []
-correctGuesses = []
-#intialize string to store og word without the "_"
-unmaskedword = "string"
-
-
-
-
-# Initialize a new game with a word and return a game ID, aswell as masking the current word
+# Initialize a new game with a new word and return a game ID, aswell as masking the current word
 @app.route("/games/", methods=["POST"])
 def games():
     global game_id
@@ -46,8 +34,9 @@ def games():
             unmaskedword = word
     maskedword = "_" * len(unmaskedword)
     game["masked word"] = maskedword
-    return jsonify(game_id, maskedword, unmaskedword), 201
+    return jsonify(game_id), 201
 
+# gamepos outputs game dict using game_id
 @app.route("/games/<game_id>", methods=["GET"])
 def gamepos(game_id):
     return jsonify(game), 201
@@ -56,18 +45,19 @@ def gamepos(game_id):
 def guesses(game_id):
     #checks if game is in progress
     if game["Game status"] != "in progress":
-        return jsonify({"error": "game not in progress"})
+        return jsonify({"Error": "Game not in progress"})
 
     global unmaskedword
     data = request.get_json()
     letter = data["letter"]
+    #edge case protection: lower and uppercase accepted
     letter = letter.upper()
+
+    # edge case: ensuring no repeated guesses
     if letter in game["Guesses so far"]:
-        return jsonify({"error": "letter already guessed"}, game), 409
+        return jsonify({"Error": "Letter already guessed"}, game), 409
     else:
-        # Loops every letter checking for matches. If match = replace "_" with the letter.
-        # no match = adjusted score, potential game over. 409
-        # saves chosen letter - no double votes
+        # stores guessed letters
         game["Guesses so far"].append(letter)
         unmaskedword = list(unmaskedword)
 
@@ -76,41 +66,40 @@ def guesses(game_id):
         global correct_counter
         correct_counter = 0
 
+        # checking for matching letters in hangman word
         for i in unmaskedword:
             j+=1
             if i == letter:
-                # replacing "_" with letter
+                # replacing "_" with guessed letter
                 new_word = game["masked word"]
                 new_word = list(new_word)
                 new_word[j-1] = letter
                 new_word = "".join(map(str,new_word))
                 game["masked word"] = new_word
 
-                # check if word is guessed
+                # check if word is fully guessed, congratulating and returning 200 if so
                 missing_letter = 0
                 for i in new_word:
                     if i == "_":
                         missing_letter+=1
                 if missing_letter == 0:
                     game["Game status"] = "won"
-                    return jsonify({"message": "Congratulations! You have guessed the word correctly."}, game), 200
-
-                correctGuesses.append(letter)
+                    return jsonify({"Message": "Congratulations! You have guessed the word correctly."}, game), 200
                 correct_counter +=1
+
+            # if letter is incorrectly guessed, reduce lives
             if j == len(unmaskedword) and correct_counter == 0:
-                incorrectGuesses.append(letter)
                 if game["Remaining attempts"] > 1:
                     game["Remaining attempts"]-=1
-                    return jsonify({"wrong letter":"try again"}, game), 201
+                    return jsonify({"Wrong letter":"Try again"}, game), 201
                 else:
+                    # if no more lives left, game over
                     game["Remaining attempts"]-=1
                     game["Game status"] = "lost"
-                    return jsonify({"error": "No more attempts left, game over"}, game), 409
-        
-        return jsonify({"welldone":"guess again!"}, game), 201
+                    return jsonify({"Error": "No more attempts left, game over"}, game), 409
                 
-            
-            
+        # letter is correctly guessed
+        return jsonify({"Welldone":"Guess again!"}, game), 201
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=4567)
