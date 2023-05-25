@@ -39,7 +39,7 @@ python app.py
 5. This will retrieve the current game state, including the masked word, remaining attempts, and previous guesses.
 
 <picture>
-  <img alt="screenshot of returned gamestate" src="https://github.com/duserc/Unosquare-Hangman/blob/main/images/unop/p4.png">
+  <img alt="screenshot of returned gamestate" src="https://github.com/duserc/Unosquare-Hangman/blob/main/images/unop/p41.png">
 </picture>
 
 6. You can also delete a game by making a DELETE request to /games/{game_id} endpoint:
