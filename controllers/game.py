@@ -14,10 +14,10 @@ def generate_word():
     return random.choice(word_list)
 
 def mask_word(word, guessed_letters):
-    masked_word = ""
+    masked_word = []
     for letter in word:
-            masked_word += "_"
-    return masked_word.strip()
+        masked_word.append("_")
+    return masked_word
 
 def is_valid_guess(guess, game):
     if not guess.isalpha() or len(guess) != 1 or guess in game["guessed_letters"]:
@@ -34,6 +34,10 @@ def update_game_status(game, masked_word):
             return "in progress"
         else:
             return "won"
+        
+##def unmask_word(guess, game, word):
+ ##   if guess in word:
+        
         
 
 @mod.route('/', methods=['POST'])
@@ -58,7 +62,7 @@ def get_game_state(game_id):
         "incorrect_guesses": game["guessed_letters"],
         "remaining_attempts": game["attempts"],
         "status": game["game_status"],
-        "word": masked_word,
+        "word": "".join(masked_word),
     })
 
 @mod.route('/<string:game_id>/guesses', methods=['POST'])
@@ -75,10 +79,14 @@ def make_guess(game_id):
     masked_word = mask_word(game["word"], game["guessed_letters"])
     
     game["game_status"] = update_game_status(game, masked_word)
+    if game["game_status"] == "won":
+        return jsonify({"Message": "Congratulations! You have guessed the word correctly."}, game), 200
+    if game["game_status"] == "lost":
+        return jsonify({"Error": "No more attempts left, game over"}), 422
     
     return jsonify({
         "incorrect_guesses": game["guessed_letters"],
         "remaining_attempts": game["attempts"],
         "status": game["game_status"],
-        "word": masked_word,
+        "word": "".join(masked_word),
     })
