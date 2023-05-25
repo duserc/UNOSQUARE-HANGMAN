@@ -21,7 +21,7 @@ python app.py
 2. Create a new game by making a POST request to "/games/" endpoint, I used postman below:
 
 <picture>
-  <img alt="Screenshot of exact postman input used to create the game" src="https://github.com/duserc/Unosquare-Hangman/tree/main/images/unop/p1.png">
+  <img alt="Screenshot of exact postman input used to create the game" src="https://github.com/duserc/Unosquare-Hangman/blob/main/images/unop/p1.png">
 </picture>
 
 3. This will initialize a new game and return a unique game ID (game_id), returning code 201.
