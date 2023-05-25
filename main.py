@@ -34,18 +34,27 @@ def games():
             unmaskedword = word
     maskedword = "_" * len(unmaskedword)
     game["masked word"] = maskedword
+    game["Game status"] = "in progress"
     return jsonify(game_id), 201
 
-# gamepos outputs game dict using game_id
-@app.route("/games/<game_id>", methods=["GET"])
+# gamepos outputs game dict using game_id, also handles deleting current game
+@app.route("/games/<game_id>", methods=["GET","DELETE"])
 def gamepos(game_id):
-    return jsonify(game), 201
+    global game
+    if request.method == "GET":
+        return jsonify(game), 200
+    
+    if request.method == "DELETE":
+        del words[unmaskedword]
+        game["Game status"] = "deleted"
+        return jsonify({"Message": "Game deleted"}), 204
+
 
 @app.route("/games/<game_id>/guesses", methods=["POST"])
 def guesses(game_id):
     #checks if game is in progress
     if game["Game status"] != "in progress":
-        return jsonify({"Error": "Game not in progress"})
+        return jsonify({"Error": "Game not in progress"}), 404
 
     global unmaskedword
     data = request.get_json()
@@ -91,12 +100,12 @@ def guesses(game_id):
             if j == len(unmaskedword) and correct_counter == 0:
                 if game["Remaining attempts"] > 1:
                     game["Remaining attempts"]-=1
-                    return jsonify({"Wrong letter":"Try again"}, game), 201
+                    return jsonify({"Wrong letter":"Try again"}, game), 400
                 else:
                     # if no more lives left, game over
                     game["Remaining attempts"]-=1
                     game["Game status"] = "lost"
-                    return jsonify({"Error": "No more attempts left, game over"}, game), 409
+                    return jsonify({"Error": "No more attempts left, game over"}, game), 422
                 
         # letter is correctly guessed
         return jsonify({"Welldone":"Guess again!"}, game), 201

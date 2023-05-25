@@ -1,59 +1,42 @@
-# Python Hangman API 
+# Hangman API
 
-In this partial implementation the technologies used are:
+This is a simple Hangman API game implemented using Flask and Python. The game allows players to create and retrieve a game, along with modifying the game's state by guessing letters to uncover a hidden word. 
 
-- Python version 3.11.*
-- PIP (python package manager)
-- [Flask](https://flask.palletsprojects.com/en/2.3.x/)
-  - Flask is a micro web framework that is used to expose API endpoints.
-- [unittest](https://docs.python.org/3/library/unittest.html) 
-  - unittest is a Python testing framework.
+## Installation
 
-## How to: Run Application
+1. Clone the repository: 
 
-- Please skip Installer sections if you already have the following installed:
-  - Python
-  - PIP
+git clone https://github.com/duserc/Unosquare-Hangman.git
 
+2. Install the required dependencies:
 
-### Manual Installation macOS & Windows
+pip install -r requirements.txt
 
-1. Install Python
+## Usage
 
-To install python 3.11.* you can follow the below steps:
+1. Start the Flask server:
 
-- Visit the python website download at https://www.python.org/downloads/release/python-3113/.
+python app.py
 
-- Click on the installer that is relevant for your computer. A download should begin with the pkg/exe.
+2. Create a new game by making a POST request to "/games/" endpoint, I used postman below:
 
-- Follow the installation wizard with the default settings selected.
+![Screenshot of exact postman input used to create the game]
+(https://imgur.com/a/gnqT68A)
 
-2. Install PIP (it should be included, if you don't have it please see https://pip.pypa.io/en/stable/installation/)
+3. This will initialize a new game and return a unique game ID (game_id).
 
-3. Verify installation
+![Screenshot of returned unique game ID - this is between 1 and 5 for readability in this instance]
+(https://imgur.com/nSHP7hl)
 
-- Open a terminal/command line
+4. Get the current game state by making a GET request to /games/{game_id} endpoint:
 
-- type `python --version`
-  - You should see `3.11.3` or similar appear.
+![Screenshot of postman input]
+(https://imgur.com/gxl8Qo8)
 
-## Running the Python Application
+5. This will retrieve the current game state, including the masked word, remaining attempts, and previous guesses.
 
-To run the python service using python & pip, follow these steps:
+![screenshot of returned gamestate]
+(https://imgur.com/N4EE9hB)
 
-- Navigate to the root directory of your python service project in the terminal/command line. For this repository the command would be:
-  - `cd python`
+6. You can also delete a game by making a DELETE request to /games/{game_id} endpoint:
 
-### Optional :
-1. we recommend virtualenv to avoid global package installation issues. To install virtualenv we need to run `pip install virtualenv`
-2. Run the following command to create the virtual directory: `python -m venv ./`
-3. We can start the virtualenv with `source bin/activate` on macOS or Linux and `.\venv\Scripts\activate` on windows.                        
-
-### Steps to run
-1. Run the following command to install packages: `pip install -r requirements.txt`
-2. Run the following command to start up the application: `python main.py`
-3. (optional) Run the following command to execute the unit tests: `python -m unittest`
-
-The app should now be available at: `http://localhost:4567`
-
-Happy coding :) 
