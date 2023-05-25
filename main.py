@@ -49,7 +49,6 @@ def gamepos(game_id):
         game["Game status"] = "deleted"
         return jsonify({"Message": "Game deleted"}), 204
 
-
 @app.route("/games/<game_id>/guesses", methods=["POST"])
 def guesses(game_id):
     #checks if game is in progress
@@ -62,7 +61,7 @@ def guesses(game_id):
     #edge case protection: lower and uppercase accepted
     letter = letter.upper()
 
-    # edge case: ensuring no repeated guesses
+    # edge-case: ensuring no repeated guesses
     if letter in game["Guesses so far"]:
         return jsonify({"Error": "Letter already guessed"}, game), 409
     else:
