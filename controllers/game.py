@@ -26,6 +26,16 @@ def is_valid_guess(guess, game):
     game["attempts"] -=1
     return True
 
+def update_game_status(game, masked_word):
+    if game["attempts"] == 0:
+        return "lost"
+    for i in masked_word:
+        if i == "_":
+            return "in progress"
+        else:
+            return "won"
+        
+
 @mod.route('/', methods=['POST'])
 def start_game():
     game_id = str(uuid.uuid4())
@@ -33,7 +43,8 @@ def start_game():
     games[game_id] = {
         "word": word,
         "guessed_letters": [],
-        "attempts": 6
+        "attempts": 6,
+        "game_status": "waiting first guess"
     }
     return game_id, 201
 
@@ -46,7 +57,7 @@ def get_game_state(game_id):
     return jsonify({
         "incorrect_guesses": game["guessed_letters"],
         "remaining_attempts": game["attempts"],
-        "status": "In Progress",
+        "status": game["game_status"],
         "word": masked_word,
     })
 
@@ -62,10 +73,12 @@ def make_guess(game_id):
         return jsonify({"Message": "Guess must be supplied with 1, unique letter"}), 400
     
     masked_word = mask_word(game["word"], game["guessed_letters"])
-
+    
+    game["game_status"] = update_game_status(game, masked_word)
+    
     return jsonify({
         "incorrect_guesses": game["guessed_letters"],
         "remaining_attempts": game["attempts"],
-        "status": "In Progress",
+        "status": game["game_status"],
         "word": masked_word,
     })
