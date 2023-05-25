@@ -20,8 +20,10 @@ def mask_word(word, guessed_letters):
     return masked_word.strip()
 
 def is_valid_guess(guess, game):
-    if not guess.isalpha() or len(guess) != 1:
+    if not guess.isalpha() or len(guess) != 1 or guess in game["guessed_letters"]:
         return False
+    game["guessed_letters"].append(guess)
+    game["attempts"] -=1
     return True
 
 @mod.route('/', methods=['POST'])
@@ -57,7 +59,7 @@ def make_guess(game_id):
         abort(400)
     guess = request.json['letter'].lower()
     if not is_valid_guess(guess, game):
-        return jsonify({"Message": "Guess must be supplied with 1 letter"}), 400
+        return jsonify({"Message": "Guess must be supplied with 1, unique letter"}), 400
     
     masked_word = mask_word(game["word"], game["guessed_letters"])
 
