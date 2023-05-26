@@ -24,13 +24,17 @@ def is_valid_guess(guess, game):
         return False
     return True
 
-def is_correct_guess(guess, game):
+def is_correct_guess(guess, game, word):
     if guess not in game["guessed_letters"]:
         game["guessed_letters"].append(guess)
-    for i in range(len(word)):
-        if i == guess:
-            return True
-    return False
+        if guess not in word:
+            game["attempts"]-=1
+            return "False"
+        else:
+            return "True"
+    else:
+        return "Repeated"
+        
     
 def update_game_status(game, masked_word):
     if game["attempts"] == 0:
@@ -81,16 +85,22 @@ def make_guess(game_id):
         abort(404)
     if not request.json or 'letter' not in request.json:
         abort(400)
+        
     guess = request.json['letter'].lower()
     if not is_valid_guess(guess, game):
         return jsonify({"Message": "Guess must be supplied with 1, letter"}), 400
+    
     word = game["word"]
     masked_word = unmask_word(guess, word, mask_word(word))
     
-    correct = is_correct_guess(guess, game)
-    if not correct:
-        game["attempts"] -=1
-           
+    correct = is_correct_guess(guess, game, word)
+    if correct == "False":
+        return jsonify({"Wrong letter": "Try again"}), 400
+    if correct == "True":
+        return jsonify({"Welldone":"Guess again!"}, game), 201
+    if correct == "Repeated":
+        return jsonify({"Error": "Letter already guessed"}, game), 400
+          
         
     game["game_status"] = update_game_status(game, masked_word)
     if game["game_status"] == "won":
