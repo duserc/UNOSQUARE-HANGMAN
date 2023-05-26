@@ -13,19 +13,25 @@ word_list = ["Banana", "Canine", "Unosquare", "Airport"]
 def generate_word():
     return random.choice(word_list)
 
-def mask_word(word, guessed_letters):
+def mask_word(word):
     masked_word = []
-    for letter in word:
+    for i in word:
         masked_word.append("_")
     return masked_word
 
 def is_valid_guess(guess, game):
-    if not guess.isalpha() or len(guess) != 1 or guess in game["guessed_letters"]:
+    if not guess.isalpha() or len(guess) != 1:
         return False
-    game["guessed_letters"].append(guess)
-    game["attempts"] -=1
     return True
 
+def is_correct_guess(guess, game):
+    if guess not in game["guessed_letters"]:
+        game["guessed_letters"].append(guess)
+    for i in range(len(word)):
+        if i == guess:
+            return True
+    return False
+    
 def update_game_status(game, masked_word):
     if game["attempts"] == 0:
         return "lost"
@@ -35,8 +41,11 @@ def update_game_status(game, masked_word):
         else:
             return "won"
         
-##def unmask_word(guess, game, word):
- ##   if guess in word:
+def unmask_word(guess, word, masked_word):
+    for i in range(len(word)):
+        if i == guess:
+            masked_word[i] = guess
+    return masked_word
         
         
 
@@ -57,7 +66,7 @@ def get_game_state(game_id):
     game = games.get(game_id)
     if game is None:
         abort(404)
-    masked_word = mask_word(game["word"], game["guessed_letters"])
+    masked_word = mask_word(game["word"])
     return jsonify({
         "incorrect_guesses": game["guessed_letters"],
         "remaining_attempts": game["attempts"],
@@ -74,10 +83,15 @@ def make_guess(game_id):
         abort(400)
     guess = request.json['letter'].lower()
     if not is_valid_guess(guess, game):
-        return jsonify({"Message": "Guess must be supplied with 1, unique letter"}), 400
+        return jsonify({"Message": "Guess must be supplied with 1, letter"}), 400
+    word = game["word"]
+    masked_word = unmask_word(guess, word, mask_word(word))
     
-    masked_word = mask_word(game["word"], game["guessed_letters"])
-    
+    correct = is_correct_guess(guess, game)
+    if not correct:
+        game["attempts"] -=1
+           
+        
     game["game_status"] = update_game_status(game, masked_word)
     if game["game_status"] == "won":
         return jsonify({"Message": "Congratulations! You have guessed the word correctly."}, game), 200
