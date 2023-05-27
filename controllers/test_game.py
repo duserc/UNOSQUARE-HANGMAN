@@ -48,7 +48,6 @@ class TestGameController(unittest.TestCase):
             game = response.json
             word = mock_generate_word()
             self.assertEqual(word, "Banana") 
-            print(game)
             self.assertEqual(game, [
             {'guesses_so_far': [],
             'remaining_attempts': 6,
