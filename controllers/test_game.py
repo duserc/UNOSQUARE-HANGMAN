@@ -7,6 +7,7 @@ from unittest.mock import patch
 from controllers.game import start_game
 from controllers.game import get_game_state
 from controllers.game import generate_word
+from controllers.game import mask_word
 
 
 GAMEID = "06335e84-2872-4914-8c5d-3ed07d2a2f16"
@@ -25,8 +26,12 @@ class TestGameController(unittest.TestCase):
         word_list = ["Banana","Canine","Unosquare","Airport"]
         self.assertIn(result, word_list)
         
-    
-    
+    def test_masking_mask_word(self):
+        word = "Banana"
+        guessed_letters = []
+        masked_word = mask_word(word, guessed_letters)
+        self.assertEqual(masked_word, ['_', '_', '_', '_', '_', '_'])
+        
     
     @patch('controllers.game.generate_word', mock_generate_word)
     @patch('uuid.uuid4', mock_uuid)
