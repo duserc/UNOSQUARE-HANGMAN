@@ -20,6 +20,14 @@ def mock_generate_word():
 
 class TestGameController(unittest.TestCase):
 
+    def test_generate_word_gives_string(self):
+        result = generate_word()
+        word_list = ["Banana","Canine","Unosquare","Airport"]
+        self.assertIn(result, word_list)
+        
+    
+    
+    
     @patch('controllers.game.generate_word', mock_generate_word)
     @patch('uuid.uuid4', mock_uuid)
     def test_create_game_returns_valid_id(self):
