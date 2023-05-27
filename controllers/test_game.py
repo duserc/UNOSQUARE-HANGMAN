@@ -8,6 +8,7 @@ from controllers.game import start_game
 from controllers.game import get_game_state
 from controllers.game import generate_word
 from controllers.game import mask_word
+from controllers.game import is_valid_guess
 
 
 GAMEID = "06335e84-2872-4914-8c5d-3ed07d2a2f16"
@@ -31,6 +32,12 @@ class TestGameController(unittest.TestCase):
         guessed_letters = []
         masked_word = mask_word(word, guessed_letters)
         self.assertEqual(masked_word, ['_', '_', '_', '_', '_', '_'])
+    
+    def test_is_invalid_guess_valid_lower_case(self):
+        guess = "a"
+        game = "null"
+        guess_attempt = is_valid_guess(guess, game)
+        self.assertTrue(guess_attempt)
         
     
     @patch('controllers.game.generate_word', mock_generate_word)
