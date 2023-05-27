@@ -27,7 +27,7 @@ def is_valid_guess(guess):
         return False
     return True
 
-def is_correct_guess(guess, game, word):
+def check_correct_guess(guess, game, word):
     if guess not in game["guessed_letters"]:
         game["guessed_letters"].append(guess)
         if guess not in word:
@@ -85,7 +85,7 @@ def make_guess(game_id):
         return jsonify({"Message": "Guess must be supplied with 1, letter"}), 400
     
     word = game["word"]
-    is_correct_guess(guess, game, word)
+    check_correct_guess(guess, game, word)
     game["masked_word"] = mask_word(word, game["guessed_letters"])
     game["game_status"] = update_game_status(game)
     
