@@ -72,7 +72,7 @@ def get_game_state(game_id):
         "remaining_attempts": game["attempts"],
         "status": game["game_status"],
         "word": "".join(masked_word),
-    })
+    }, 200)
 
 
 @mod.route('/<string:game_id>/guesses', methods=['POST'])
