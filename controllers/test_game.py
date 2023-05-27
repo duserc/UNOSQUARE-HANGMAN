@@ -38,7 +38,30 @@ class TestGameController(unittest.TestCase):
         game = "null"
         guess_attempt = is_valid_guess(guess, game)
         self.assertTrue(guess_attempt)
+    
+    def test_is_invalid_guess_valid_upper_case(self):
+        guess = "B"
+        game = "null"
+        guess_attempt = is_valid_guess(guess, game)
+        self.assertTrue(guess_attempt)   
         
+    def test_is_invalid_guess_invalid_character(self):
+        guess = "#"
+        game = "null"
+        guess_attempt = is_valid_guess(guess, game)
+        self.assertFalse(guess_attempt)
+
+    def test_is_invalid_guess_invalid_len(self):
+        guess = "aa"
+        game = "null"
+        guess_attempt = is_valid_guess(guess, game)
+        self.assertFalse(guess_attempt)
+
+    def test_is_invalid_guess_invalid_len(self):
+        guess = "aA"
+        game = "null"
+        guess_attempt = is_valid_guess(guess, game)
+        self.assertFalse(guess_attempt)
     
     @patch('controllers.game.generate_word', mock_generate_word)
     @patch('uuid.uuid4', mock_uuid)
