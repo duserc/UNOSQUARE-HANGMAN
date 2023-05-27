@@ -53,7 +53,19 @@ class TestGameController(unittest.TestCase):
             'remaining_attempts': 6,
             'status': 'waiting first guess',
             'word': '______'}, 200])
-
+    
+    # @patch('controllers.game.generate_word', mock_generate_word)
+    # @patch('uuid.uuid4', mock_uuid)        
+    # def test_check_lower_case_guesses(self):
+    #     id, code = start_game()
+    #     self.assertEqual(code, 201)
+    #     self.assertEqual(id, GAMEID)
+    #     with app.app_context():
+    #         response = get_game_state(id)
+    #         self.assertEqual(response.status_code, 200)
+    #         word = mock_generate_word()
+    #         self.assertEqual(word, "Banana")
+            
 
 
 if __name__ == '__main__':
