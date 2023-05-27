@@ -9,7 +9,7 @@ from controllers.game import get_game_state
 from controllers.game import generate_word
 from controllers.game import mask_word
 from controllers.game import is_valid_guess
-
+from controllers.game import is_correct_guess
 
 GAMEID = "06335e84-2872-4914-8c5d-3ed07d2a2f16"
 BANANA = "Banana"
@@ -62,6 +62,47 @@ class TestGameController(unittest.TestCase):
         game = "null"
         guess_attempt = is_valid_guess(guess, game)
         self.assertFalse(guess_attempt)
+        
+    def test_is_correct_guess_correct(self):
+        guess = "a"
+        word = "Banana"
+        game =  {
+        "word": word,
+        "guessed_letters": [],
+        "attempts": 6,
+        "game_status": "waiting first guess"
+        }
+        is_correct_guess(guess, game, word)
+        self.assertEqual(game["guessed_letters"], ["a"])
+        self.assertEqual(game["attempts"], 6)
+        
+    def test_is_correct_guess_incorrect(self):
+        guess = "x"
+        word = "Banana"
+        game =  {
+        "word": word,
+        "guessed_letters": [],
+        "attempts": 6,
+        "game_status": "waiting first guess"
+        }
+        is_correct_guess(guess, game, word)
+        self.assertEqual(game["guessed_letters"], ["x"])
+        self.assertEqual(game["attempts"], 5)
+        
+    def test_is_correct_guess_incorrect(self):
+        guess = "u"
+        word = "Unosquare"
+        game =  {
+        "word": word,
+        "guessed_letters": [],
+        "attempts": 6,
+        "game_status": "waiting first guess"
+        }
+        is_correct_guess(guess, game, word)
+        self.assertEqual(game["guessed_letters"], ["u"])
+        self.assertEqual(game["attempts"], 6)
+        
+
     
     @patch('controllers.game.generate_word', mock_generate_word)
     @patch('uuid.uuid4', mock_uuid)
