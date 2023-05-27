@@ -74,20 +74,7 @@ class TestGameController(unittest.TestCase):
         }
         is_correct_guess(guess, game, word)
         self.assertEqual(game["guessed_letters"], ["a"])
-        self.assertEqual(game["attempts"], 6)
-        
-    def test_is_correct_guess_incorrect(self):
-        guess = "x"
-        word = "Banana"
-        game =  {
-        "word": word,
-        "guessed_letters": [],
-        "attempts": 6,
-        "game_status": "waiting first guess"
-        }
-        is_correct_guess(guess, game, word)
-        self.assertEqual(game["guessed_letters"], ["x"])
-        self.assertEqual(game["attempts"], 5)
+        self.assertEqual(game["attempts"], 6)        
         
     def test_is_correct_guess_incorrect(self):
         guess = "u"
