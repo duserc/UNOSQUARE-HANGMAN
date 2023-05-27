@@ -58,6 +58,7 @@ def start_game():
         "guessed_letters": [],
         "attempts": 6,
         "game_status": "waiting first guess",
+        "masked_word": ""
     }
     return game_id, 201
     
@@ -67,8 +68,7 @@ def get_game_state(game_id):
     game = games.get(game_id)
     if game is None:
         abort(404)
-    masked_word = mask_word(game["word"], game["guessed_letters"])
-    game.update({"masked_word": masked_word})
+    game["masked_word"] = mask_word(game["word"], game["guessed_letters"])
     return api_output(game), 200
 
 
