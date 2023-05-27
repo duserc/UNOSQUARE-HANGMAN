@@ -16,7 +16,7 @@ def generate_word():
 def mask_word(word, guessed_letters):
     masked_word = []
     for letter in word:
-        if letter in guessed_letters:
+        if letter.lower() in guessed_letters:
             masked_word.append(letter)
         else:
             masked_word.append("_")
@@ -40,12 +40,6 @@ def update_game_status(game, masked_word):
         return "in progress"
     else:
         return "won"
-
-def unmask_word(guess, word, masked_word,game):
-    for i in range(len(word)):
-        if word[i] == guess:
-            masked_word[i] = guess
-    return masked_word
 
 
 @mod.route('/', methods=['POST'])
