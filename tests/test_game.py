@@ -1,5 +1,6 @@
 import unittest
 import uuid
+import json
 
 from flask import jsonify
 from main import app
@@ -10,6 +11,7 @@ from controllers.game import generate_word
 from controllers.game import mask_word
 from controllers.game import is_valid_guess
 from controllers.game import check_correct_guess
+from controllers.game import make_guess
 
 GAMEID = "06335e84-2872-4914-8c5d-3ed07d2a2f16"
 BANANA = "Banana"
@@ -84,8 +86,7 @@ class TestGameController(unittest.TestCase):
         self.assertEqual(game["guessed_letters"], ["u"])
         self.assertEqual(game["attempts"], 6)
         
-    
-    
+        
     @patch('controllers.game.generate_word', mock_generate_word)
     @patch('uuid.uuid4', mock_uuid)
     def test_create_game_returns_valid_id(self):
@@ -121,19 +122,34 @@ class TestGameController(unittest.TestCase):
             }
             self.assertEqual(response.json, expected_json)
     
-    # @patch('controllers.game.generate_word', mock_generate_word)
-    # @patch('uuid.uuid4', mock_uuid)        
-    # def test_check_lower_case_guesses(self):
-    #     id, code = start_game()
-    #     self.assertEqual(code, 201)
-    #     self.assertEqual(id, GAMEID)
-    #     with app.app_context():
-    #         response = get_game_state(id)
-    #         self.assertEqual(response.status_code, 200)
-    #         word = mock_generate_word()
-    #         self.assertEqual(word, "Banana")
-            
-
+    @patch('controllers.game.generate_word', mock_generate_word)
+    @patch('uuid.uuid4', mock_uuid)
+    def test_make_guess_correct_letter(self):
+        id, code = start_game()
+        self.assertEqual(code, 201)
+        self.assertEqual(id, GAMEID)
+        with app.app_context():
+            response = get_game_state(id)
+            self.assertEqual(response.status_code, 200)
+            word = mock_generate_word()
+            self.assertEqual(word, "Banana") 
+            expected_json = {
+                "guesses_so_far": [],
+                "remaining_attempts": 6,
+                "status": "waiting first guess",
+                "word": "______"
+            }
+            self.assertEqual(response.json, expected_json)
+            with app.test_client() as client:
+                response = client.post(f'/games/{id}/guesses', json={"letter": "a"})
+                self.assertEqual(response.status_code, 200)
+                expected_response = {
+                "guesses_so_far": ["a"],
+                "remaining_attempts": 6,
+                "status": "in progress",
+                "word": "_a_a_a"
+                }
+                self.assertEqual(response.get_json(), expected_response)
 
 if __name__ == '__main__':
     unittest.main()
