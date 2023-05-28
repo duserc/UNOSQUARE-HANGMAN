@@ -10,11 +10,11 @@ Much of the installation guide below was already mentioned in the above Unosquar
 
 Alternatively goto:
 
--[installation](#installation)
-  -[installingPython&pip](#installing-pythonpip)
-  -[clonerepository](#clone-the-repository)
--[Usage](#usage)
--[unittest](#unittest)
+- [installation](#installation)
+  - [installingPython&pip](#installing-pythonpip)
+  - [clonerepository](#clone-the-repository)
+- [Usage](#usage)
+- [unittest](#unittest)
 
 To try the game out on your own system, follow these steps:
 
