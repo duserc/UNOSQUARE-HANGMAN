@@ -1,17 +1,15 @@
 import unittest
 import uuid
-import json
 
 from flask import jsonify
 from main import app
 from unittest.mock import patch
 from controllers.game import start_game
-from controllers.game import get_game_state
 from controllers.game import generate_word
 from controllers.game import mask_word
 from controllers.game import is_valid_guess
 from controllers.game import check_correct_guess
-from controllers.game import make_guess
+from controllers.game import api_output
 
 GAMEID = '06335e84-2872-4914-8c5d-3ed07d2a2f16'
 BANANA = 'Banana'
@@ -86,6 +84,24 @@ class TestGameController(unittest.TestCase):
         self.assertEqual(game['guessed_letters'], ['u'])
         self.assertEqual(game['attempts'], 6)
         
+    def test_api_output_outputs(self): 
+        word = 'Unosquare'
+        game = {
+            'word': word,
+            'guessed_letters': [],
+            'attempts': 6,
+            'game_status': 'waiting first guess',
+            'masked_word': ''
+        }
+        expected_output = {
+            'guesses_so_far': game['guessed_letters'],
+            'remaining_attempts': game['attempts'],
+            'status': game['game_status'],
+            'word': game['masked_word']
+        }
+        check = api_output(game)
+        self.assertEqual(check, expected_output)
+        
         
     @patch('controllers.game.generate_word', mock_generate_word)
     @patch('uuid.uuid4', mock_uuid)
@@ -124,7 +140,7 @@ class TestGameController(unittest.TestCase):
     
     @patch('controllers.game.generate_word', mock_generate_word)
     @patch('uuid.uuid4', mock_uuid)
-    def test_make_guess_correct_letter(self):
+    def test_make_guess_correct_letter_lower(self):
         id, code = start_game()
         self.assertEqual(code, 201)
         self.assertEqual(id, GAMEID)
@@ -356,6 +372,8 @@ class TestGameController(unittest.TestCase):
         with app.test_client() as client:
             response = client.delete(f'/games/{id}')
             self.assertEqual(response.status_code, 204)
+
+    
                 
             
 
