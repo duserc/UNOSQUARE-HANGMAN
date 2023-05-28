@@ -63,9 +63,12 @@ def start_game():
     return game_id, 201
     
 
-@mod.route('/<string:game_id>', methods=['GET'])
+@mod.route('/<string:game_id>', methods=['GET', 'DELETE'])
 def get_game_state(game_id):
     game = games.get(game_id)
+    if request.method == "DELETE":
+        game.clear()
+        return jsonify({"message:": "Game deleted"}), 204
     if game is None:
         abort(404)
     game["masked_word"] = mask_word(game["word"], game["guessed_letters"])
