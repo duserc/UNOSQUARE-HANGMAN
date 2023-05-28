@@ -51,6 +51,8 @@ if you dont have git installed, click the following link: https://git-scm.com/do
 
 inside a terminal, navigate to the directory that you wish to download the API and type: `git clone https://github.com/duserc/Unosquare-Hangman.git` into a terminal.
 
+then navigate into the cloned directory.
+
 1. Install the required dependencies:
 
 `pip install -r requirements.txt`
@@ -61,13 +63,14 @@ To test the API manually via postman, follow this guide. To test via unittest, s
 
 install postman: 
 
+(It is not neccesary to create an account)
 https://www.postman.com/downloads/
 
 select, NEW at the top, then select: `HTTP REQUEST`
 
 1. Start the Flask server:
 
-`python app.py`
+`python main.py`
 
 2. Create a new game by making a POST request to "http://localhost:4567/games/" endpoint, I used postman below:
 
@@ -107,6 +110,8 @@ Returning the error code of 204.
 <picture>
   <img alt="Content-Type : application/json, Accept : application/json" src="https://github.com/duserc/Unosquare-Hangman/blob/main/images/unop/u5.png">
 </picture>
+
+then click "raw" to prepare the json input.
 
 Submitting a POST request via: http://localhost:4567/games/{game_id}/guesses
 
