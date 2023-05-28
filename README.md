@@ -29,6 +29,8 @@ You can [skip](#clone-the-repository) the following installation guide if you ha
 
 1. download python 3.11+ here:
 
+its good practice to tick the box: `add python .exe to path`
+
 https://www.python.org/downloads/release/python-3113/.
 
 2. PIP
