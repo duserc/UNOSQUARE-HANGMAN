@@ -30,7 +30,7 @@ def is_valid_guess(guess):
 def check_correct_guess(guess, game, word):
     if guess not in game["guessed_letters"]:
         game["guessed_letters"].append(guess)
-        if guess not in word:
+        if guess not in word.lower():
             game["attempts"]-=1
             
 def update_game_status(game):
