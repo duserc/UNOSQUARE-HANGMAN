@@ -179,6 +179,30 @@ class TestGameController(unittest.TestCase):
                 "word": "B_____"
                 }
                 self.assertEqual(response.get_json(), expected_response)
+                
+    @patch('controllers.game.generate_word', mock_generate_word)
+    @patch('uuid.uuid4', mock_uuid)
+    def test_make_guess_correct_incorrect_char(self):
+        id, code = start_game()
+        self.assertEqual(code, 201)
+        self.assertEqual(id, GAMEID)
+        with app.app_context():
+            response = get_game_state(id)
+            self.assertEqual(response.status_code, 200)
+            word = mock_generate_word()
+            self.assertEqual(word, "Banana") 
+            expected_json = {
+                "guesses_so_far": [],
+                "remaining_attempts": 6,
+                "status": "waiting first guess",
+                "word": "______"
+            }
+            self.assertEqual(response.json, expected_json)
+            with app.test_client() as client:
+                response = client.post(f'/games/{id}/guesses', json={"letter": "#"})
+                self.assertEqual(response.status_code, 400)
+                expected_response = {'Message': 'Guess must be supplied with 1, letter'}
+                self.assertEqual(response.get_json(), expected_response)                
 
 if __name__ == '__main__':
     unittest.main()
