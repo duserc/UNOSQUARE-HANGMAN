@@ -53,7 +53,7 @@ class TestGameController(unittest.TestCase):
         guess_attempt = is_valid_guess(guess)
         self.assertFalse(guess_attempt)
 
-    def test_is_invalid_guess_invalid_len(self):
+    def test_is_invalid_guess_invalid_len_with_caps(self):
         guess = "aA"
         guess_attempt = is_valid_guess(guess)
         self.assertFalse(guess_attempt)
@@ -111,14 +111,15 @@ class TestGameController(unittest.TestCase):
         with app.app_context():
             response = get_game_state(id)
             self.assertEqual(response.status_code, 200)
-            game = response.json
             word = mock_generate_word()
             self.assertEqual(word, "Banana") 
-            self.assertEqual(game, [
-            {'guesses_so_far': [],
-            'remaining_attempts': 6,
-            'status': 'waiting first guess',
-            'word': '______'}, 200])
+            expected_json = {
+                "guesses_so_far": [],
+                "remaining_attempts": 6,
+                "status": "waiting first guess",
+                "word": "______"
+            }
+            self.assertEqual(response.json, expected_json)
     
     # @patch('controllers.game.generate_word', mock_generate_word)
     # @patch('uuid.uuid4', mock_uuid)        

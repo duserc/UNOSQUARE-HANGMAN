@@ -69,7 +69,7 @@ def get_game_state(game_id):
     if game is None:
         abort(404)
     game["masked_word"] = mask_word(game["word"], game["guessed_letters"])
-    return api_output(game), 200
+    return jsonify(api_output(game))
 
 
 @mod.route('/<string:game_id>/guesses', methods=['POST'])
