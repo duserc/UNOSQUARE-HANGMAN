@@ -83,6 +83,9 @@ def make_guess(game_id):
     guess = request.json['letter'].lower()
     if not is_valid_guess(guess):
         return jsonify({"Message": "Guess must be supplied with 1, letter"}), 400
+    if guess in game["guessed_letters"]:
+        return jsonify({"Message": "letter already guessed"}), 401
+    
     
     word = game["word"]
     check_correct_guess(guess, game, word)

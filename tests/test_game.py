@@ -313,6 +313,42 @@ class TestGameController(unittest.TestCase):
                 response = client.post(f'/games/{id}/guesses', json={"letter": "g"})
                 self.assertEqual(response.status_code, 422)
                 expected_response = {"Error": "No more attempts left, game over"}
+            
+    @patch('controllers.game.generate_word', mock_generate_word)
+    @patch('uuid.uuid4', mock_uuid)
+    def test_make_guess_repeated_letter(self):
+        id, code = start_game()
+        self.assertEqual(code, 201)
+        self.assertEqual(id, GAMEID)
+        with app.app_context():
+            response = get_game_state(id)
+            self.assertEqual(response.status_code, 200)
+            word = mock_generate_word()
+            self.assertEqual(word, "Banana") 
+            expected_json = {
+                "guesses_so_far": [],
+                "remaining_attempts": 6,
+                "status": "waiting first guess",
+                "word": "______"
+            }
+            self.assertEqual(response.json, expected_json)
+            with app.test_client() as client:
+                response = client.post(f'/games/{id}/guesses', json={"letter": "B"})
+                self.assertEqual(response.status_code, 200)
+                expected_response = {
+                "guesses_so_far": ["b"],
+                "remaining_attempts": 6,
+                "status": "in progress",
+                "word": "B_____"
+                }
+                self.assertEqual(response.get_json(), expected_response) 
+                response = client.post(f'/games/{id}/guesses', json={"letter": "b"})
+                self.assertEqual(response.status_code, 401)
+                expected_response = {"Message": "letter already guessed"}
+                self.assertEqual(response.get_json(), expected_response) 
+            
+
+                
                  
 
 if __name__ == '__main__':
