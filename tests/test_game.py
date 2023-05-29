@@ -371,7 +371,6 @@ class TestGameController(unittest.TestCase):
         with app.test_client() as client:
             response = client.delete(f'/games/{id}')
             self.assertEqual(response.status_code, 204)
-   
 
 if __name__ == '__main__':
     unittest.main()
