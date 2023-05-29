@@ -62,8 +62,7 @@ def start_game():
     }
     return game_id, 201
     
-
-@mod.route('/<string:game_id>', methods=['GET', 'DELETE'])
+@mod.route('/<string:game_id>', methods=['GET', 'DELETE', 'POST'])
 def get_game_state(game_id):
     game = games.get(game_id)
     if request.method == 'DELETE':
@@ -73,7 +72,6 @@ def get_game_state(game_id):
         abort(404)
     game['masked_word'] = mask_word(game['word'], game['guessed_letters'])
     return jsonify(api_output(game))
-
 
 @mod.route('/<string:game_id>/guesses', methods=['POST'])
 def make_guess(game_id):
@@ -88,7 +86,6 @@ def make_guess(game_id):
         return jsonify({'Message': 'Guess must be supplied with 1, letter'}), 400
     if guess in game['guessed_letters']:
         return jsonify({'Message': 'letter already guessed'}), 401
-    
     
     word = game['word']
     check_correct_guess(guess, game, word)
